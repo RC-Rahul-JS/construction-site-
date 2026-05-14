@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================== BASE ===================== */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-dark text-white font-sans overflow-x-hidden;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-heading;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-dark-200; }
+  ::-webkit-scrollbar-thumb { @apply bg-gold rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gold-light; }
+
+  ::selection { background: rgba(201, 168, 76, 0.3); color: #fff; }
+}
+
+/* ===================== COMPONENTS ===================== */
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center gap-2 px-7 py-3 bg-gold text-dark font-semibold text-sm tracking-wider uppercase rounded-sm
+    transition-all duration-300 hover:bg-gold-light hover:shadow-gold-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-7 py-3 border border-gold text-gold font-semibold text-sm tracking-wider uppercase rounded-sm
+    transition-all duration-300 hover:bg-gold hover:text-dark hover:shadow-gold hover:-translate-y-0.5 active:translate-y-0;
+  }
+  .btn-outline-white {
+    @apply inline-flex items-center gap-2 px-7 py-3 border border-white text-white font-semibold text-sm tracking-wider uppercase rounded-sm
+    transition-all duration-300 hover:bg-white hover:text-dark hover:-translate-y-0.5;
+  }
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-glass;
+  }
+  .glass-card-gold {
+    @apply bg-gold/5 backdrop-blur-md border border-gold/20 rounded-xl shadow-glass;
+  }
+  .section-py { @apply py-20 lg:py-28; }
+  .section-px { @apply px-4 sm:px-6 lg:px-8; }
+  .container-custom { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .gold-text { @apply text-transparent bg-clip-text bg-gold-gradient; }
+  .gold-line {
+    @apply relative;
+  }
+  .gold-line::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-16 h-0.5 bg-gold-gradient;
+  }
+  .nav-link {
+    @apply text-gray-300 hover:text-gold text-sm font-medium transition-colors duration-200 relative;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-0 h-px bg-gold transition-all duration-300;
+  }
+  .nav-link:hover::after { @apply w-full; }
+  .service-card {
+    @apply relative overflow-hidden rounded-xl bg-dark-200 border border-white/5
+    transition-all duration-500 hover:border-gold/40 hover:shadow-gold hover:-translate-y-2;
+  }
+  .project-card {
+    @apply relative overflow-hidden rounded-xl cursor-pointer;
+  }
+  .testimonial-card {
+    @apply glass-card p-8 relative;
+  }
+  .process-step {
+    @apply flex flex-col items-center text-center relative;
+  }
+  .tag {
+    @apply inline-block px-3 py-1 text-xs font-semibold tracking-widest uppercase text-gold bg-gold/10 border border-gold/20 rounded-sm;
+  }
+  .input-field {
+    @apply w-full bg-dark-200 border border-white/10 text-white placeholder-gray-500 rounded-lg px-5 py-4
+    focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300;
+  }
+  .textarea-field {
+    @apply w-full bg-dark-200 border border-white/10 text-white placeholder-gray-500 rounded-lg px-5 py-4 resize-none
+    focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300;
+  }
+  .select-field {
+    @apply w-full bg-dark-200 border border-white/10 text-white rounded-lg px-5 py-4
+    focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-300;
+  }
+}
+
+/* ===================== UTILITIES ===================== */
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #C9A84C 0%, #E8C97A 50%, #A07830 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bg-glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .border-glass { border: 1px solid rgba(255, 255, 255, 0.08); }
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.4), transparent);
+  }
+  .overlay-dark::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80 z-10;
+  }
+  .overlay-dark-strong::before {
+    content: '';
+    @apply absolute inset-0 bg-black/70 z-10;
+  }
+  .overlay-side::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10;
+  }
+  .animate-marquee-pause:hover .animate-marquee { animation-play-state: paused; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* ===================== SWIPER OVERRIDES ===================== */
+.swiper-pagination-bullet {
+  background: rgba(201, 168, 76, 0.5) !important;
+  width: 8px !important;
+  height: 8px !important;
+  transition: all 0.3s ease !important;
+}
+.swiper-pagination-bullet-active {
+  background: #C9A84C !important;
+  width: 28px !important;
+  border-radius: 4px !important;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: #C9A84C !important;
+  width: 48px !important;
+  height: 48px !important;
+  background: rgba(0,0,0,0.5) !important;
+  border-radius: 50% !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(201,168,76,0.3) !important;
+  transition: all 0.3s ease !important;
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(201,168,76,0.2) !important;
+  border-color: #C9A84C !important;
+}
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+/* ===================== AOS OVERRIDE ===================== */
+[data-aos] { pointer-events: none; }
+[data-aos].aos-animate { pointer-events: auto; }
+
+/* ===================== LIGHTBOX ===================== */
+.yarl__root { --yarl__color_backdrop: rgba(0,0,0,0.95); }
+.yarl__button { color: #C9A84C !important; }
+
+/* ===================== LOADING SCREEN ===================== */
+.loader-ring {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(201,168,76,0.1);
+  border-top-color: #C9A84C;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===================== FILTER BUTTONS ===================== */
+.filter-btn {
+  @apply px-5 py-2 text-sm font-medium border border-white/10 text-gray-400 rounded-sm
+  transition-all duration-300 hover:border-gold/40 hover:text-gold;
+}
+.filter-btn.active {
+  @apply bg-gold text-dark border-gold;
+}
+
+/* ===================== COUNTER ===================== */
+.counter-item {
+  @apply text-center p-8 glass-card-gold;
+}
+
+/* ===================== ACCORDION ===================== */
+.accordion-item {
+  @apply border border-white/10 rounded-lg overflow-hidden transition-all duration-300;
+}
+.accordion-item.open {
+  @apply border-gold/30;
+}
+.accordion-header {
+  @apply flex items-center justify-between w-full p-6 text-left
+  text-white font-medium cursor-pointer hover:text-gold transition-colors duration-200;
+}
+.accordion-body {
+  @apply px-6 pb-6 text-gray-400 text-sm leading-relaxed;
+}
+
+/* ===================== PROGRESS BAR ===================== */
+.progress-bar {
+  @apply h-1.5 rounded-full bg-dark-300 overflow-hidden;
+}
+.progress-fill {
+  @apply h-full rounded-full bg-gold-gradient transition-all duration-1000 ease-out;
+}
+
+/* ===================== HERO SLIDE ===================== */
+.hero-slide-img {
+  @apply absolute inset-0 w-full h-full object-cover;
+  transform-origin: center;
+  animation: kenBurns 12s ease-in-out infinite alternate;
+}
+@keyframes kenBurns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* ===================== DARK MODE ===================== */
+.dark body { @apply bg-dark text-white; }
+.light body { @apply bg-gray-50 text-gray-900; }
