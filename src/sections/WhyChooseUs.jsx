@@ -30,77 +30,96 @@ export default function WhyChooseUs() {
   return (
     <section className="section-py bg-dark">
       <div className="container-custom">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left - Image */}
-          <div className="relative order-2 lg:order-1">
-            <div className="relative rounded-2xl overflow-hidden">
+        <div className="mb-12">
+          <SectionTitle
+            tag="Why Choose Us"
+            title={<>Building Trust, <span className="text-gradient-gold">One Project</span> At a Time</>}
+            subtitle="We combine experience, innovation, and dedication to deliver construction excellence that exceeds expectations."
+            center
+          />
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-10 items-center">
+          
+          {/* Left Features */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="flex flex-col gap-5 order-2 lg:order-1"
+          >
+            {features.slice(0, 4).map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div key={feature.title} variants={itemVariants} className="flex gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors duration-300">
+                    <Icon size={14} className="text-gold" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold text-xs mb-1 group-hover:text-gold transition-colors">
+                      {feature.title}
+                    </h4>
+                    <p className="text-gray-500 text-[10px] leading-snug pr-4">{feature.desc}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+
+          {/* Center Image */}
+          <div className="relative order-1 lg:order-2 flex justify-center">
+            <div className="relative w-full max-w-[300px] lg:max-w-full rounded-2xl overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80"
+                src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80"
                 alt="BuildCraft team"
-                className="w-full h-[520px] object-cover"
+                className="w-full h-[380px] object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-dark/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent" />
             </div>
 
             {/* Floating stats card */}
             <motion.div
-              animate={{ y: [0, -8, 0] }}
+              animate={{ y: [0, -6, 0] }}
               transition={{ repeat: Infinity, duration: 3 }}
-              className="absolute -bottom-6 -right-6 glass-card-gold p-6 rounded-xl"
+              className="absolute -bottom-4 left-1/2 -translate-x-1/2 glass-card-gold px-5 py-3 rounded-xl w-[180px] text-center"
             >
-              <div className="text-4xl font-heading font-bold text-gradient-gold mb-1">15+</div>
-              <div className="text-gray-300 text-sm">Years of Excellence</div>
-              <div className="flex gap-0.5 mt-2">
+              <div className="text-2xl font-heading font-bold text-gradient-gold mb-0.5">15+</div>
+              <div className="text-gray-300 text-[10px] uppercase tracking-wide">Years of Excellence</div>
+              <div className="flex justify-center gap-0.5 mt-1.5">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-4 h-1 rounded-full bg-gold" />
+                  <div key={i} className="w-3 h-0.5 rounded-full bg-gold" />
                 ))}
               </div>
             </motion.div>
-
-            {/* Gold frame accent */}
-            <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-gold rounded-tl-xl pointer-events-none" />
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-gold rounded-br-xl pointer-events-none" />
           </div>
 
-          {/* Right - Content */}
-          <div className="order-1 lg:order-2">
-            <SectionTitle
-              tag="Why Choose Us"
-              title={<>Building Trust, <span className="text-gradient-gold">One Project</span> At a Time</>}
-              subtitle="We combine experience, innovation, and dedication to deliver construction excellence that exceeds expectations."
-            />
+          {/* Right Features */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="flex flex-col gap-5 order-3"
+          >
+            {features.slice(4, 8).map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div key={feature.title} variants={itemVariants} className="flex gap-3 group">
+                  <div className="w-8 h-8 rounded-lg bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0 group-hover:bg-gold/20 transition-colors duration-300">
+                    <Icon size={14} className="text-gold" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold text-xs mb-1 group-hover:text-gold transition-colors">
+                      {feature.title}
+                    </h4>
+                    <p className="text-gray-500 text-[10px] leading-snug pr-4">{feature.desc}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
 
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            >
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <motion.div
-                    key={feature.title}
-                    variants={itemVariants}
-                    className="flex gap-4 p-4 rounded-xl border border-white/5 hover:border-gold/20 
-                    hover:bg-gold/3 transition-all duration-300 group"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gold/10 border border-gold/20 flex items-center justify-center shrink-0
-                    group-hover:bg-gold/20 transition-colors duration-300">
-                      <Icon size={17} className="text-gold" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold text-sm mb-1 group-hover:text-gold transition-colors">
-                        {feature.title}
-                      </h4>
-                      <p className="text-gray-500 text-xs leading-relaxed">{feature.desc}</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
         </div>
       </div>
     </section>

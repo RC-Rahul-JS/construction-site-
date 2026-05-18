@@ -4,10 +4,26 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight } from 'react-icons/fi';
 import SectionTitle from '../components/SectionTitle';
-import { services } from '../data/services';
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
+import * as FaIcons from 'react-icons/fa';
 import CTABanner from '../sections/CTABanner';
 
 export default function Services() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDocuments('services', { sortBy: 'order', sortOrder: 'asc' })
+      .then(data => {
+        setServices(data);
+      })
+      .catch(() => setServices([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+
+  if (loading) return <section className="section-py bg-dark text-white text-center">Loading services...</section>;
   return (
     <>
       <Helmet>
@@ -40,7 +56,7 @@ export default function Services() {
           <SectionTitle tag="Expert Services" title={<>Everything You Need, <span className="text-gradient-gold">Under One Roof</span></>} center />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, i) => {
-              const Icon = service.icon;
+              const Icon = typeof service.icon === 'string' ? (FaIcons[service.icon] || FaIcons.FaWrench) : service.icon;
               return (
                 <motion.div
                   key={service.id}
@@ -61,7 +77,7 @@ export default function Services() {
                     <h2 className="font-heading text-white font-bold text-xl mb-3 group-hover:text-gold transition-colors">{service.title}</h2>
                     <p className="text-gray-400 text-sm leading-relaxed mb-5">{service.description}</p>
                     <ul className="space-y-2 mb-6">
-                      {service.features.map(f => (
+                      {(service.features || []).map(f => (
                         <li key={f} className="flex items-center gap-2 text-gray-400 text-xs">
                           <span className="w-1.5 h-1.5 rounded-full bg-gold shrink-0" />
                           {f}

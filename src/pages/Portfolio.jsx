@@ -1,30 +1,45 @@
 // src/pages/Portfolio.jsx
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { FiMapPin, FiMaximize2, FiArrowRight } from 'react-icons/fi';
 import SectionTitle from '../components/SectionTitle';
-import { projects, categories } from '../data/projects';
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
+import { categories } from '../data/projects';
 import CTABanner from '../sections/CTABanner';
 
 export default function Portfolio() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  useEffect(() => {
+    getDocuments('portfolio')
+      .then(data => {
+        setProjects(data);
+      })
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
+  }, []);
+
 
   const filtered = activeCategory === 'all'
     ? projects
     : projects.filter(p => p.category === activeCategory);
 
-  const lightboxSlides = filtered.map(p => ({ src: p.image, alt: p.title }));
+  const lightboxSlides = filtered.map(p => ({ src: p.image || (p.images && p.images[0]), alt: p.title }));
 
   const openLightbox = (index) => {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
+
+  if (loading) return <section className="section-py pt-40 bg-dark text-white text-center">Loading portfolio...</section>;
 
   return (
     <>
@@ -130,11 +145,11 @@ export default function Portfolio() {
                       <span>{project.year}</span>
                     </div>
                     <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: `${project.progress}%` }} />
+                      <div className="progress-fill" style={{ width: `${project.progress || 100}%` }} />
                     </div>
                     <div className="flex justify-between text-xs mt-1.5 text-gray-500">
                       <span>Completion</span>
-                      <span className="text-gold">{project.progress}%</span>
+                      <span className="text-gold">{project.progress || 100}%</span>
                     </div>
                   </div>
                 </motion.div>

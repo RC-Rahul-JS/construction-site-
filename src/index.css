@@ -49,7 +49,7 @@
   .glass-card-gold {
     @apply bg-gold/5 backdrop-blur-md border border-gold/20 rounded-xl shadow-glass;
   }
-  .section-py { @apply py-20 lg:py-28; }
+  .section-py { @apply py-12 md:py-20 lg:py-28; }
   .section-px { @apply px-4 sm:px-6 lg:px-8; }
   .container-custom { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
   .gold-text { @apply text-transparent bg-clip-text bg-gold-gradient; }
@@ -222,6 +222,25 @@
 .progress-fill {
   @apply h-full rounded-full bg-gold-gradient transition-all duration-1000 ease-out;
 }
+
+/* ===================== RICH TEXT CONTENT ===================== */
+.rich-text {
+  @apply text-gray-400 leading-relaxed;
+}
+.rich-text p { @apply mb-5; }
+.rich-text h1, .rich-text h2, .rich-text h3 { @apply text-white font-bold font-heading mt-10 mb-4; }
+.rich-text h1 { @apply text-3xl; }
+.rich-text h2 { @apply text-2xl; }
+.rich-text h3 { @apply text-xl; }
+.rich-text ul, .rich-text ol { @apply mb-6 ml-6 space-y-2; }
+.rich-text ul { @apply list-disc; }
+.rich-text ol { @apply list-decimal; }
+.rich-text li { @apply pl-2; }
+.rich-text strong { @apply text-white font-bold; }
+.rich-text a { @apply text-gold hover:underline; }
+.rich-text blockquote { @apply border-l-4 border-gold pl-6 italic my-8 text-gray-300; }
+.rich-text img { @apply rounded-xl my-8 mx-auto; }
+
 
 /* ===================== HERO SLIDE ===================== */
 .hero-slide-img {

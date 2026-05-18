@@ -2,6 +2,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { FiCompass, FiHome, FiSun, FiStar, FiCheck, FiSend } from 'react-icons/fi';
 import SectionTitle from '../components/SectionTitle';
 import CTABanner from '../sections/CTABanner';
@@ -23,6 +24,7 @@ const vastuTips = [
 ];
 
 export default function Vastu() {
+  const { phoneLink } = useSiteSettings();
   const [form, setForm] = useState({ name: '', phone: '', email: '', propertyType: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
@@ -55,9 +57,9 @@ export default function Vastu() {
             <p className="text-gray-300 text-lg leading-relaxed mb-8">
               Align your space with the ancient science of Vastu Shastra for harmony, prosperity, health, and positive energy in every corner of your life.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
               <a href="#booking" className="btn-gold">Book Consultation</a>
-              <a href="tel:+919876543210" className="btn-outline-white">Call Expert</a>
+              <a href={phoneLink} className="btn-outline-white">Call Expert</a>
             </div>
           </motion.div>
         </div>
@@ -105,7 +107,7 @@ export default function Vastu() {
               </div>
 
               <div className="mt-8 p-6 bg-dark-200 rounded-2xl border border-gold/20">
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <img src="https://randomuser.me/api/portraits/women/56.jpg" alt="Vastu Expert" className="w-14 h-14 rounded-full border-2 border-gold/30" />
                   <div>
                     <p className="text-white font-semibold">Pooja Verma</p>
@@ -129,7 +131,7 @@ export default function Vastu() {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-gray-400 text-xs mb-2">Your Name *</label>
                       <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Rahul Sharma" className="input-field" />

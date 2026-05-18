@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiArrowLeft, FiCheck } from 'react-icons/fi';
+import { addDocument } from '../firebase/firestore';
 
 const steps = ['Project Type', 'Requirements', 'Budget & Timeline', 'Contact Info'];
 
@@ -34,7 +35,21 @@ export default function Quote() {
   const maxEst = data.area * (selected?.range[1] ?? 3200);
   const fmt = v => v >= 10000000 ? `₹${(v / 10000000).toFixed(1)} Cr` : `₹${(v / 100000).toFixed(0)} L`;
 
-  const handleSubmit = () => setSubmitted(true);
+  const handleSubmit = async () => {
+    try {
+      await addDocument('quotes', {
+        ...data,
+        estimateRange: `${fmt(minEst)} – ${fmt(maxEst)}`,
+        minEst,
+        maxEst,
+        createdAt: new Date().toISOString(),
+        status: 'Pending'
+      });
+      setSubmitted(true);
+    } catch (err) {
+      alert('Failed to submit quote request. Please try again.');
+    }
+  };
 
   if (submitted) {
     return (
@@ -99,7 +114,7 @@ export default function Quote() {
                 <div>
                   <h2 className="font-heading text-2xl font-bold text-white mb-2">What type of project?</h2>
                   <p className="text-gray-400 text-sm mb-8">Select the category that best describes your project.</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {projectTypes.map(t => (
                       <button key={t.id} onClick={() => setData({ ...data, type: t.id })}
                         className={`p-5 rounded-xl border text-center transition-all duration-300
@@ -129,7 +144,7 @@ export default function Quote() {
                   </div>
                   <div>
                     <label className="text-white font-medium block mb-4">Construction Quality</label>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {qualities.map(q => (
                         <button key={q.id} onClick={() => setData({ ...data, quality: q.id })}
                           className={`p-4 rounded-xl border text-center transition-all duration-300
@@ -155,7 +170,7 @@ export default function Quote() {
                   <p className="text-gray-400 text-sm mb-8">Help us understand your financial plan and urgency.</p>
                   <div className="mb-6">
                     <label className="text-white font-medium block mb-4">Overall Budget</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       {budgetRanges.map(b => (
                         <button key={b} onClick={() => setData({ ...data, budget: b })}
                           className={`py-3 px-4 rounded-lg border text-sm text-center transition-all
@@ -167,7 +182,7 @@ export default function Quote() {
                   </div>
                   <div>
                     <label className="text-white font-medium block mb-4">Preferred Timeline</label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {timelines.map(t => (
                         <button key={t} onClick={() => setData({ ...data, timeline: t })}
                           className={`py-3 px-4 rounded-lg border text-sm text-left transition-all

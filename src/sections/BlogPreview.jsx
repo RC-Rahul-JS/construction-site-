@@ -3,9 +3,29 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiClock, FiTag } from 'react-icons/fi';
 import SectionTitle from '../components/SectionTitle';
-import { blogs } from '../data/blog';
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
+import { blogs as fallbackBlogs } from '../data/blog';
 
 export default function BlogPreview() {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDocuments('blogs', {
+      filters: [{ field: 'published', op: '==', value: true }],
+      sortBy: 'createdAt', sortOrder: 'desc', limitTo: 3
+    })
+      .then(data => {
+        setBlogs(data.length > 0 ? data : fallbackBlogs.slice(0, 3));
+      })
+      .catch(() => setBlogs(fallbackBlogs.slice(0, 3)))
+      .finally(() => setLoading(false));
+  }, []);
+
+
+  if (loading) return <section className="section-py bg-dark text-white text-center">Loading blogs...</section>;
+
   const featured = blogs.slice(0, 3);
   return (
     <section className="section-py bg-dark">

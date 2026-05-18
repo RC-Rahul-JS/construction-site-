@@ -1,13 +1,14 @@
-// src/components/FloatingButtons.jsx
 import { motion } from 'framer-motion';
 import { FaWhatsapp, FaPhone } from 'react-icons/fa';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function FloatingButtons() {
+  const { phoneLink, waLink } = useSiteSettings();
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
       {/* Call Button */}
       <motion.a
-        href="tel:+919876543210"
+        href={phoneLink}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2.5, type: 'spring', stiffness: 200 }}
@@ -26,7 +27,7 @@ export default function FloatingButtons() {
 
       {/* WhatsApp Button */}
       <motion.a
-        href="https://wa.me/919876543210?text=Hello! I'm interested in your construction services."
+        href={waLink}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}

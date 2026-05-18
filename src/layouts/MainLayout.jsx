@@ -7,6 +7,8 @@ import 'aos/dist/aos.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FloatingButtons from '../components/FloatingButtons';
+import { Helmet } from 'react-helmet-async';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
@@ -15,6 +17,7 @@ const pageVariants = {
 };
 
 export default function MainLayout() {
+  const { settings } = useSiteSettings();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -32,6 +35,15 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen bg-dark">
+      <Helmet>
+        <title>{settings.metaTitle || settings.siteName}</title>
+        <meta name="description" content={settings.metaDescription} />
+        <meta name="keywords" content={settings.metaKeywords} />
+        {/* Open Graph */}
+        <meta property="og:title" content={settings.metaTitle || settings.siteName} />
+        <meta property="og:description" content={settings.metaDescription} />
+        {settings.logo && <meta property="og:image" content={settings.logo} />}
+      </Helmet>
       <Navbar />
       <AnimatePresence mode="wait">
         <motion.main

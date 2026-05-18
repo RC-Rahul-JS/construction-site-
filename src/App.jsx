@@ -2,6 +2,7 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
+import { SiteSettingsProvider } from './context/SiteSettingsContext';
 import MainLayout from './layouts/MainLayout';
 import LoadingScreen from './components/LoadingScreen';
 
@@ -18,6 +19,7 @@ import BlogDetail from './pages/BlogDetail';
 import Contact from './pages/Contact';
 import Quote from './pages/Quote';
 import Careers from './pages/Careers';
+import Reviews from './pages/Reviews';
 import NotFound from './pages/NotFound';
 
 const router = createBrowserRouter([
@@ -38,6 +40,7 @@ const router = createBrowserRouter([
       { path: 'contact', element: <Contact />, errorElement: <NotFound /> },
       { path: 'quote', element: <Quote />, errorElement: <NotFound /> },
       { path: 'careers', element: <Careers />, errorElement: <NotFound /> },
+      { path: 'reviews', element: <Reviews />, errorElement: <NotFound /> },
       { path: '*', element: <NotFound /> },
     ],
   },
@@ -47,8 +50,10 @@ export default function App() {
   return (
     <HelmetProvider>
       <ThemeProvider>
-        <LoadingScreen />
-        <RouterProvider router={router} />
+        <SiteSettingsProvider>
+          <LoadingScreen />
+          <RouterProvider router={router} />
+        </SiteSettingsProvider>
       </ThemeProvider>
     </HelmetProvider>
   );

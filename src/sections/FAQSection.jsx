@@ -1,34 +1,36 @@
 // src/sections/FAQSection.jsx
-import { useState } from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiMinus } from 'react-icons/fi';
 import SectionTitle from '../components/SectionTitle';
-import { faqs } from '../data/faqs';
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 function FAQItem({ faq, isOpen, onToggle }) {
   return (
-    <div className={`accordion-item ${isOpen ? 'open' : ''}`}>
-      <button
-        className="accordion-header"
+    <div className={`border border-white/5 rounded-xl bg-dark-200 overflow-hidden transition-all duration-300 ${isOpen ? 'border-gold/30 shadow-lg shadow-gold/5' : 'hover:border-white/10'}`}>
+      <button 
+        className="w-full flex items-center justify-between p-3.5 text-left focus:outline-none" 
         onClick={onToggle}
-        aria-expanded={isOpen}
       >
-        <span className="text-sm pr-4">{faq.question}</span>
-        <span className="shrink-0 w-8 h-8 rounded-full bg-dark-300 border border-white/10 flex items-center justify-center
-        text-gold transition-all duration-300 group-hover:bg-gold/10">
-          {isOpen ? <FiMinus size={14} /> : <FiPlus size={14} />}
+        <span className={`text-[12px] font-medium pr-4 transition-colors ${isOpen ? 'text-gold' : 'text-gray-200'}`}>
+          {faq.question}
+        </span>
+        <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-gold/20 text-gold scale-110' : 'bg-dark-300 text-gray-400'}`}>
+          {isOpen ? <FiMinus size={12} /> : <FiPlus size={12} />}
         </span>
       </button>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: 'easeInOut' }}
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }} 
+            animate={{ height: 'auto', opacity: 1 }} 
+            exit={{ height: 0, opacity: 0 }} 
+            transition={{ duration: 0.3 }} 
             className="overflow-hidden"
           >
-            <div className="accordion-body">
+            <div className="px-3.5 pb-4 text-[10px] text-gray-400 leading-relaxed border-t border-white/5 mx-3.5 pt-3 mt-1">
               {faq.answer}
             </div>
           </motion.div>
@@ -39,7 +41,24 @@ function FAQItem({ faq, isOpen, onToggle }) {
 }
 
 export default function FAQSection() {
-  const [openId, setOpenId] = useState(1);
+  const { phoneLink, waLinkPlain } = useSiteSettings();
+  const [openId, setOpenId] = useState(null);
+  const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    getDocuments('faq', { sortBy: 'order', sortOrder: 'asc' })
+      .then(data => {
+        setFaqs(data);
+        if (data.length > 0) setOpenId(data[0].id);
+      })
+      .catch(() => setFaqs([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+
+  if (loading) return <section className="section-py bg-dark text-white text-center">Loading FAQs...</section>;
 
   return (
     <section className="section-py bg-dark">
@@ -54,19 +73,19 @@ export default function FAQSection() {
             />
 
             {/* Contact CTA */}
-            <div className="glass-card p-6 mt-8">
-              <h4 className="text-white font-semibold mb-2">Still have questions?</h4>
-              <p className="text-gray-400 text-sm mb-4">Our team is ready to help with any specific queries about your project.</p>
-              <div className="flex gap-3">
-                <a href="tel:+919876543210" className="btn-gold text-xs px-5 py-2.5">Call Now</a>
-                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="btn-outline text-xs px-5 py-2.5">WhatsApp</a>
+            <div className="glass-card p-5 mt-6 rounded-xl">
+              <h4 className="text-white font-semibold text-[13px] mb-1">Still have questions?</h4>
+              <p className="text-gray-400 text-[10px] mb-4">Our team is ready to help with any specific queries about your project.</p>
+              <div className="flex flex-wrap gap-2.5">
+                <a href={phoneLink} className="btn-gold text-[10px] px-4 py-2">Call Now</a>
+                <a href={waLinkPlain} target="_blank" rel="noopener noreferrer" className="btn-outline text-[10px] px-4 py-2">WhatsApp</a>
               </div>
             </div>
           </div>
 
           {/* Right - Accordion */}
-          <div className="space-y-3">
-            {faqs.map(faq => (
+          <div className="space-y-2.5">
+            {(showAll ? faqs : faqs.slice(0, 4)).map(faq => (
               <FAQItem
                 key={faq.id}
                 faq={faq}
@@ -74,6 +93,15 @@ export default function FAQSection() {
                 onToggle={() => setOpenId(openId === faq.id ? null : faq.id)}
               />
             ))}
+            {faqs.length > 4 && (
+              <button 
+                onClick={() => setShowAll(!showAll)} 
+                className="w-full py-2.5 mt-1 text-[10px] text-gold font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-gold/10 rounded-xl transition-colors border border-dashed border-gold/30"
+              >
+                {showAll ? 'View Less' : 'View More FAQs'} 
+                <FiPlus className={`transition-transform duration-300 ${showAll ? 'rotate-45' : ''}`} />
+              </button>
+            )}
           </div>
         </div>
       </div>

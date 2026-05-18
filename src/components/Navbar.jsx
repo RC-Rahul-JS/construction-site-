@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiSun, FiMoon, FiPhone } from 'react-icons/fi';
-import { useTheme } from '../context/ThemeContext';
+import { FiMenu, FiX, FiPhone } from 'react-icons/fi';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const navLinks = [
   { label: 'Home', path: '/' },
@@ -16,9 +16,10 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const { settings, phoneLink, displayPhone } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isDark, toggleTheme } = useTheme();
+
   const location = useLocation();
 
   useEffect(() => {
@@ -47,15 +48,32 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 bg-gold-gradient rounded-sm flex items-center justify-center shadow-gold transition-all duration-300 group-hover:shadow-gold-lg">
-                <span className="text-dark font-heading font-bold text-lg leading-none">B</span>
-              </div>
-              <div>
-                <span className="font-heading text-xl font-bold text-white tracking-wide">
-                  Build<span className="text-gradient-gold">Craft</span>
-                </span>
-                <p className="text-[9px] text-gray-500 tracking-[0.2em] uppercase leading-none -mt-0.5">Construction</p>
-              </div>
+              {settings.logo ? (
+                <img
+                  src={settings.logo}
+                  alt={settings.siteName || 'Logo'}
+                  className="h-10 w-auto max-w-[140px] object-contain"
+                />
+              ) : (
+                <>
+                  <div className="w-9 h-9 bg-gold-gradient rounded-sm flex items-center justify-center shadow-gold transition-all duration-300 group-hover:shadow-gold-lg">
+                    <span className="text-dark font-heading font-bold text-lg leading-none">
+                      {settings.logoIcon !== undefined ? settings.logoIcon : (settings.siteName || 'B').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-heading text-xl font-bold text-white tracking-wide">
+                      {settings.logoTextWhite || (settings.siteName || 'BuildCraft').split(' ')[0]}
+                      <span className="text-gradient-gold ml-1">
+                        {settings.logoTextGold !== undefined ? settings.logoTextGold : ((settings.siteName || 'BuildCraft').split(' ').length > 1 ? (settings.siteName || 'BuildCraft').split(' ').slice(1).join(' ') : 'Craft')}
+                      </span>
+                    </span>
+                    <p className="text-[9px] text-gray-500 tracking-[0.2em] uppercase leading-none -mt-0.5">
+                      {settings.logoSubText !== undefined ? settings.logoSubText : (settings.tagline || 'Construction')}
+                    </p>
+                  </div>
+                </>
+              )}
             </Link>
 
             {/* Desktop Links */}
@@ -75,21 +93,17 @@ export default function Navbar() {
 
             {/* Right actions */}
             <div className="flex items-center gap-4">
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-gold hover:border-gold/40 transition-all duration-300"
-                aria-label="Toggle theme"
-              >
-                {isDark ? <FiSun size={15} /> : <FiMoon size={15} />}
-              </button>
+              {/* Phone Display */}
+              <a href={phoneLink} className="hidden lg:flex items-center gap-2 text-white/90 hover:text-gold transition-colors text-xs font-bold tracking-wide mr-2">
+                <FiPhone size={14} className="text-gold" />
+                {displayPhone}
+              </a>
 
               {/* CTA */}
               <Link
                 to="/contact"
                 className="hidden md:flex items-center gap-2 btn-gold text-xs px-5 py-2.5"
               >
-                <FiPhone size={13} />
                 Get Quote
               </Link>
 

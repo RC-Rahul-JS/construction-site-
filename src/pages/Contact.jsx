@@ -4,28 +4,70 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMapPin, FiPhone, FiMail, FiClock, FiSend, FiCheck } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
-
-const contactInfo = [
-  { icon: FiMapPin, title: 'Office Address', lines: ['123 Construction Avenue, Baner,', 'Pune – 411045, Maharashtra'] },
-  { icon: FiPhone, title: 'Phone & WhatsApp', lines: ['+91 98765 43210', '+91 98765 43211'] },
-  { icon: FiMail, title: 'Email Address', lines: ['info@buildcraft.in', 'projects@buildcraft.in'] },
-  { icon: FiClock, title: 'Working Hours', lines: ['Mon – Sat: 9:00 AM – 7:00 PM', 'Sunday: 10:00 AM – 2:00 PM'] },
-];
+import { addDocument } from '../firebase/firestore';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function Contact() {
+  const { settings, phoneLink, waLink, displayPhone, displayWhatsapp, emailjs: keys } = useSiteSettings();
+
+  const contactInfo = [
+    { icon: FiMapPin, title: 'Office Address', lines: [settings.address] },
+    { icon: FiPhone, title: 'Call & WhatsApp', lines: [`Call: ${displayPhone}`, settings.whatsapp ? `WhatsApp: ${displayWhatsapp}` : ''].filter(Boolean) },
+    { icon: FiMail, title: 'Email Address', lines: [settings.email, settings.emailProjects].filter(Boolean) },
+    { icon: FiClock, title: 'Working Hours', lines: ['Mon – Sat: 9:00 AM – 7:00 PM', 'Sunday: 10:00 AM – 2:00 PM'] },
+  ];
+
   const [form, setForm] = useState({ name: '', email: '', phone: '', service: '', budget: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const docData = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        subject: form.service ? `Interested in ${form.service} (Budget: ${form.budget})` : 'General Inquiry',
+        message: form.message,
+        service: form.service,
+        budget: form.budget,
+        read: false,
+      };
+      await addDocument('contacts', docData);
+
+      // ─── Email Notification ──────────────────────────────────────────────────
+      if (keys?.serviceId && keys?.templateId && keys?.publicKey && window.emailjs) {
+        try {
+          await window.emailjs.send(
+            keys.serviceId,
+            keys.templateId,
+            {
+              from_name: form.name,
+              from_email: form.email,
+              phone: form.phone,
+              subject: docData.subject,
+              message: form.message,
+              to_email: settings.email, // Send to the main office email
+            },
+            keys.publicKey
+          );
+        } catch (err) {
+          console.error('Email notification failed:', err);
+        }
+      }
+
       setSubmitted(true);
       setForm({ name: '', email: '', phone: '', service: '', budget: '', message: '' });
-    }, 1500);
+    } catch (error) {
+      // Error handled silently
+      alert('Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <>
@@ -77,7 +119,7 @@ export default function Contact() {
 
               {/* WhatsApp */}
               <a
-                href="https://wa.me/919876543210?text=Hello! I'm interested in your construction services."
+                href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 w-full bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] px-5 py-4 rounded-xl hover:bg-[#25D366]/20 transition-all duration-300"
@@ -168,7 +210,7 @@ export default function Contact() {
             className="mt-14 rounded-2xl overflow-hidden border border-white/5 h-[400px]">
             <iframe
               title="BuildCraft Office Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.265588856342!2d73.77802531489144!3d18.559090187382286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2e67461101%3A0xa9e05b68df87d9e5!2sBaner%2C%20Pune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+              src={settings.googleMapsEmbed || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.265588856342!2d73.77802531489144!3d18.559090187382286!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2e67461101%3A0xa9e05b68df87d9e5!2sBaner%2C%20Pune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"}
               width="100%"
               height="100%"
               style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}

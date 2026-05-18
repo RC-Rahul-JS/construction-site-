@@ -1,15 +1,36 @@
 // src/pages/ServiceDetail.jsx
 import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { getDocumentByField, getDocuments } from '../firebase/firestore';
+import * as FaIcons from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiCheck, FiArrowLeft } from 'react-icons/fi';
-import { services } from '../data/services';
 import CTABanner from '../sections/CTABanner';
 import FAQSection from '../sections/FAQSection';
 
 export default function ServiceDetail() {
   const { slug } = useParams();
-  const service = services.find(s => s.slug === slug);
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [otherServices, setOtherServices] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    getDocumentByField('services', 'slug', slug)
+      .then(data => {
+        setService(data);
+      })
+      .catch(() => setService(null))
+      .finally(() => setLoading(false));
+
+    getDocuments('services', { sortBy: 'order', sortOrder: 'asc' })
+      .then(data => setOtherServices(data))
+      .catch(() => setOtherServices([]));
+  }, [slug]);
+
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-dark pt-20 text-white">Loading...</div>;
 
   if (!service) {
     return (
@@ -22,7 +43,7 @@ export default function ServiceDetail() {
     );
   }
 
-  const Icon = service.icon;
+  const Icon = typeof service.icon === 'string' ? (FaIcons[service.icon] || FaIcons.FaWrench) : service.icon;
 
   return (
     <>
@@ -65,9 +86,12 @@ export default function ServiceDetail() {
               <h2 className="font-heading text-4xl font-bold text-white mb-6">
                 Why Choose Our <span className="text-gradient-gold">{service.title}</span> Service?
               </h2>
-              <p className="text-gray-400 leading-relaxed mb-8">{service.description} Our team ensures every detail is handled with precision, keeping you informed throughout the process.</p>
-              <div className="grid grid-cols-2 gap-4">
-                {service.features.map(f => (
+              <div 
+                className="rich-text mb-8"
+                dangerouslySetInnerHTML={{ __html: service.description }}
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {(service.features || []).map(f => (
                   <div key={f} className="flex items-start gap-3 p-4 glass-card rounded-xl">
                     <span className="w-6 h-6 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center shrink-0 mt-0.5">
                       <FiCheck size={12} className="text-gold" />
@@ -76,7 +100,7 @@ export default function ServiceDetail() {
                   </div>
                 ))}
               </div>
-              <div className="mt-8 flex gap-4">
+              <div className="mt-8 flex flex-wrap gap-4">
                 <Link to="/contact" className="btn-gold">Book Consultation</Link>
                 <Link to="/portfolio" className="btn-outline">View Projects</Link>
               </div>
@@ -97,8 +121,8 @@ export default function ServiceDetail() {
         <div className="container-custom">
           <h3 className="font-heading text-2xl font-bold text-white mb-8 text-center">Explore Other Services</h3>
           <div className="flex flex-wrap gap-3 justify-center">
-            {services.filter(s => s.slug !== slug).map(s => {
-              const SIcon = s.icon;
+            {otherServices.filter(s => s.slug !== slug).map(s => {
+              const SIcon = typeof s.icon === 'string' ? (FaIcons[s.icon] || FaIcons.FaWrench) : s.icon;
               return (
                 <Link key={s.id} to={`/services/${s.slug}`} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-dark-200 border border-white/5 text-gray-400 text-sm hover:border-gold/30 hover:text-gold transition-all duration-300">
                   <SIcon size={14} className="text-gold" /> {s.title}

@@ -86,7 +86,7 @@ export default function About() {
               </ul>
             </div>
             <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=80" alt="Bungalow" className="rounded-2xl h-56 object-cover w-full" />
                 <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=80" alt="Commercial" className="rounded-2xl h-56 object-cover w-full mt-8" />
                 <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80" alt="Interior" className="rounded-2xl h-56 object-cover w-full -mt-8" />

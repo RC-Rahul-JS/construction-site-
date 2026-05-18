@@ -9,11 +9,26 @@ import { motion } from 'framer-motion';
 import { FiArrowRight, FiMapPin, FiClock } from 'react-icons/fi';
 import { FaRupeeSign } from 'react-icons/fa';
 import SectionTitle from '../components/SectionTitle';
-import { projects } from '../data/projects';
-
-const featured = projects.filter(p => p.featured);
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
+import { projects as fallbackProjects } from '../data/projects';
 
 export default function FeaturedProjects() {
+  const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDocuments('projects', { filters: [{ field: 'featured', op: '==', value: true }] })
+      .then(data => {
+        setFeatured(data.length > 0 ? [...data, ...fallbackProjects.filter(p => p.featured)] : fallbackProjects.filter(p => p.featured));
+      })
+      .catch(() => setFeatured(fallbackProjects.filter(p => p.featured)))
+      .finally(() => setLoading(false));
+  }, []);
+
+
+  if (loading) return <section className="section-py bg-dark-100 text-white text-center">Loading featured projects...</section>;
+
   return (
     <section className="section-py bg-dark-100 relative overflow-hidden">
       {/* Background decoration */}
@@ -34,7 +49,7 @@ export default function FeaturedProjects() {
 
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={24}
+          spaceBetween={16}
           slidesPerView={1}
           navigation
           pagination={{ clickable: true }}
@@ -57,7 +72,7 @@ export default function FeaturedProjects() {
                 transition-all duration-500 hover:shadow-gold hover:-translate-y-1"
               >
                 {/* Image */}
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-44 overflow-hidden">
                   <img
                     src={project.image}
                     alt={project.title}
@@ -66,56 +81,56 @@ export default function FeaturedProjects() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-200 via-transparent to-transparent" />
                   {/* Status badge */}
-                  <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold
+                  <div className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-[9px] font-semibold
                     ${project.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-gold/20 text-gold border border-gold/30'}`}>
                     {project.status}
                   </div>
-                  <div className="absolute top-4 right-4">
-                    <span className="tag text-[10px]">{project.categoryLabel}</span>
+                  <div className="absolute top-3 right-3">
+                    <span className="tag text-[8px] px-1.5 py-0.5">{project.categoryLabel}</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <h3 className="font-heading text-white font-bold text-lg mb-3 group-hover:text-gold transition-colors">
+                <div className="p-4">
+                  <h3 className="font-heading text-white font-bold text-[13px] mb-2 group-hover:text-gold transition-colors">
                     {project.title}
                   </h3>
 
-                  <div className="flex flex-wrap gap-3 mb-4 text-xs text-gray-400">
+                  <div className="flex flex-wrap gap-2 mb-3 text-[9px] text-gray-400">
                     <span className="flex items-center gap-1">
-                      <FiMapPin size={11} className="text-gold" />
+                      <FiMapPin size={9} className="text-gold" />
                       {project.location}
                     </span>
                     <span className="flex items-center gap-1">
-                      <FiClock size={11} className="text-gold" />
-                      {project.duration}
+                      <FiClock size={9} className="text-gold" />
+                      {project.duration || project.year}
                     </span>
                     <span className="flex items-center gap-1">
-                      <FaRupeeSign size={10} className="text-gold" />
+                      <FaRupeeSign size={8} className="text-gold" />
                       {project.budget}
                     </span>
                   </div>
 
                   {/* Progress bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-xs mb-1.5">
+                  <div className="mb-3">
+                    <div className="flex justify-between text-[9px] mb-1">
                       <span className="text-gray-500">Completion</span>
-                      <span className="text-gold font-semibold">{project.progress}%</span>
+                      <span className="text-gold font-semibold">{project.progress || 100}%</span>
                     </div>
-                    <div className="progress-bar">
+                    <div className="progress-bar h-1">
                       <div
                         className="progress-fill"
-                        style={{ width: `${project.progress}%` }}
+                        style={{ width: `${project.progress || 100}%` }}
                       />
                     </div>
                   </div>
 
                   <Link
                     to={`/portfolio/${project.id}`}
-                    className="inline-flex items-center gap-2 text-gold text-xs font-semibold uppercase tracking-wide
-                    hover:gap-4 transition-all duration-300"
+                    className="inline-flex items-center gap-1.5 text-gold text-[9px] font-semibold uppercase tracking-wide
+                    hover:gap-2.5 transition-all duration-300"
                   >
-                    View Details <FiArrowRight size={12} />
+                    View Details <FiArrowRight size={9} />
                   </Link>
                 </div>
               </motion.div>

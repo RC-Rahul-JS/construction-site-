@@ -6,6 +6,7 @@ import {
   FaMapMarkerAlt, FaPhone, FaEnvelope
 } from 'react-icons/fa';
 import { FiArrowRight } from 'react-icons/fi';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const quickLinks = [
   { label: 'Home', path: '/' },
@@ -27,15 +28,16 @@ const serviceLinks = [
   { label: 'Structural Design', path: '/services/structural' },
 ];
 
-const socials = [
-  { icon: FaFacebookF, href: '#', label: 'Facebook' },
-  { icon: FaInstagram, href: '#', label: 'Instagram' },
-  { icon: FaYoutube, href: '#', label: 'YouTube' },
-  { icon: FaLinkedinIn, href: '#', label: 'LinkedIn' },
-  { icon: FaWhatsapp, href: 'https://wa.me/919876543210', label: 'WhatsApp' },
-];
-
 export default function Footer() {
+  const { settings, phoneLink, waLinkPlain } = useSiteSettings();
+
+  const socials = [
+    { icon: FaFacebookF, href: settings.facebook || '#', label: 'Facebook' },
+    { icon: FaInstagram, href: settings.instagram || '#', label: 'Instagram' },
+    { icon: FaYoutube, href: settings.youtube || '#', label: 'YouTube' },
+    { icon: FaLinkedinIn, href: settings.linkedin || '#', label: 'LinkedIn' },
+    { icon: FaWhatsapp, href: waLinkPlain, label: 'WhatsApp' },
+  ];
   return (
     <footer className="bg-dark-100 border-t border-white/5">
       {/* Main Footer */}
@@ -44,15 +46,32 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gold-gradient rounded-sm flex items-center justify-center">
-                <span className="text-dark font-heading font-bold text-xl">B</span>
-              </div>
-              <div>
-                <span className="font-heading text-2xl font-bold text-white">
-                  Build<span className="text-gradient-gold">Craft</span>
-                </span>
-                <p className="text-[9px] text-gray-500 tracking-[0.2em] uppercase -mt-0.5">Construction</p>
-              </div>
+              {settings.logo ? (
+                <img
+                  src={settings.logo}
+                  alt={settings.siteName || 'Logo'}
+                  className="h-12 w-auto max-w-[160px] object-contain"
+                />
+              ) : (
+                <>
+                  <div className="w-10 h-10 bg-gold-gradient rounded-sm flex items-center justify-center">
+                    <span className="text-dark font-heading font-bold text-xl">
+                      {settings.logoIcon !== undefined ? settings.logoIcon : (settings.siteName || 'B').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-heading text-2xl font-bold text-white">
+                      {settings.logoTextWhite || (settings.siteName || 'BuildCraft').split(' ')[0]}
+                      <span className="text-gradient-gold ml-1">
+                        {settings.logoTextGold !== undefined ? settings.logoTextGold : ((settings.siteName || 'BuildCraft').split(' ').length > 1 ? (settings.siteName || 'BuildCraft').split(' ').slice(1).join(' ') : 'Craft')}
+                      </span>
+                    </span>
+                    <p className="text-[9px] text-gray-500 tracking-[0.2em] uppercase -mt-0.5">
+                      {settings.logoSubText !== undefined ? settings.logoSubText : (settings.tagline || 'Construction')}
+                    </p>
+                  </div>
+                </>
+              )}
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               Building dreams into reality since 2010. Premium architecture, construction, and interior design solutions across Maharashtra.
@@ -123,15 +142,15 @@ export default function Footer() {
             <div className="space-y-4 mb-8">
               <div className="flex gap-3">
                 <FaMapMarkerAlt className="text-gold mt-1 shrink-0" size={14} />
-                <span className="text-gray-400 text-sm">123 Construction Avenue, Baner, Pune – 411045, Maharashtra</span>
+                <span className="text-gray-400 text-sm">{settings.address}</span>
               </div>
               <div className="flex gap-3">
                 <FaPhone className="text-gold mt-0.5 shrink-0" size={14} />
-                <a href="tel:+919876543210" className="text-gray-400 text-sm hover:text-gold transition-colors">+91 98765 43210</a>
+                <a href={phoneLink} className="text-gray-400 text-sm hover:text-gold transition-colors">{settings.phone}</a>
               </div>
               <div className="flex gap-3">
                 <FaEnvelope className="text-gold mt-0.5 shrink-0" size={14} />
-                <a href="mailto:info@buildcraft.in" className="text-gray-400 text-sm hover:text-gold transition-colors">info@buildcraft.in</a>
+                <a href={`mailto:${settings.email}`} className="text-gray-400 text-sm hover:text-gold transition-colors">{settings.email}</a>
               </div>
             </div>
             {/* Newsletter */}
@@ -156,7 +175,7 @@ export default function Footer() {
       <div className="border-t border-white/5">
         <div className="container-custom py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} BuildCraft Construction. All rights reserved.
+            {settings.footerText || `© ${new Date().getFullYear()} BuildCraft Construction. All rights reserved.`}
           </p>
           <div className="flex gap-6">
             <Link to="#" className="text-gray-500 text-xs hover:text-gold transition-colors">Privacy Policy</Link>

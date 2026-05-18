@@ -2,8 +2,10 @@
 import { Link, useRouteError } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiHome, FiPhone } from 'react-icons/fi';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function NotFound() {
+  const { phoneLink } = useSiteSettings();
   const error = useRouteError();
   const is404 = !error || error?.status === 404;
 
@@ -75,7 +77,7 @@ export default function NotFound() {
               <FiArrowLeft size={16} />
               Go Back
             </button>
-            <a href="tel:+919876543210" className="btn-outline-white">
+            <a href={phoneLink} className="btn-outline-white">
               <FiPhone size={16} />
               Call Us
             </a>

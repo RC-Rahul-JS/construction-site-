@@ -1,29 +1,51 @@
 // src/pages/Careers.jsx
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMapPin, FiClock, FiBriefcase, FiArrowRight, FiX, FiSend } from 'react-icons/fi';
-
-const openings = [
-  { id: 1, title: 'Senior Architect', dept: 'Architecture', location: 'Pune', type: 'Full-time', experience: '5+ Years', desc: 'Lead architectural projects from concept to completion. Proficiency in AutoCAD, Revit, and SketchUp required.' },
-  { id: 2, title: 'Civil Site Engineer', dept: 'Construction', location: 'Pune / Nashik', type: 'Full-time', experience: '3+ Years', desc: 'Oversee on-site construction activities, quality control, and coordination with contractors and vendors.' },
-  { id: 3, title: 'Interior Designer', dept: 'Interior', location: 'Pune', type: 'Full-time', experience: '2+ Years', desc: 'Create stunning interior concepts and manage execution for residential and commercial projects.' },
-  { id: 4, title: '3D Visualization Artist', dept: 'Design', location: 'Remote', type: 'Full-time', experience: '2+ Years', desc: 'Produce high-quality 3D renders and walkthroughs using 3ds Max, V-Ray, and Lumion.' },
-  { id: 5, title: 'Project Manager', dept: 'Management', location: 'Pune', type: 'Full-time', experience: '6+ Years', desc: 'End-to-end project management for large-scale construction projects. PMP certification preferred.' },
-  { id: 6, title: 'Vastu Consultant (Junior)', dept: 'Vastu', location: 'Pune', type: 'Part-time', experience: '1+ Years', desc: 'Assist senior Vastu consultant in residential and commercial projects. Knowledge of Vastu Shastra required.' },
-];
+import { getDocuments, addDocument } from '../firebase/firestore';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const perks = ['Competitive Salary', 'Health Insurance', 'Professional Training', 'Flexible Hours', 'Project Bonuses', 'Growth Opportunities'];
 
 export default function Careers() {
+  const { settings } = useSiteSettings();
+  const [openings, setOpenings] = useState([]);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', experience: '', message: '' });
   const [applied, setApplied] = useState(false);
 
-  const handleApply = (e) => {
+  useEffect(() => {
+    getDocuments('careers', { filters: [{ field: 'active', op: '==', value: true }] })
+      .then(data => setOpenings(data))
+      .catch(() => setOpenings([]));
+  }, []);
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleApply = async (e) => {
     e.preventDefault();
-    setApplied(true);
-    setTimeout(() => { setApplied(false); setSelected(null); }, 3000);
+    setSubmitting(true);
+    try {
+      await addDocument('job_applications', {
+        ...form,
+        jobId: selected.id,
+        jobTitle: selected.title,
+        jobDept: selected.dept,
+        status: 'New',
+        createdAt: new Date().toISOString()
+      });
+      setApplied(true);
+      setTimeout(() => { 
+        setApplied(false); 
+        setSelected(null);
+        setForm({ name: '', email: '', phone: '', experience: '', message: '' });
+      }, 3000);
+    } catch (error) {
+      alert('Failed to submit application. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -98,7 +120,7 @@ export default function Careers() {
           <div className="mt-12 text-center glass-card p-8 rounded-2xl">
             <p className="text-gray-400 mb-2">Don't see a role that fits?</p>
             <p className="text-white font-medium mb-4">Send us your resume and we'll reach out when we have the right opening.</p>
-            <a href="mailto:careers@buildcraft.in" className="btn-outline">Email Your Resume</a>
+            <a href={`mailto:${settings.emailCareers || settings.email}`} className="btn-outline">Email Your Resume</a>
           </div>
         </div>
       </section>
@@ -135,7 +157,9 @@ export default function Careers() {
                   <div><label className="text-gray-400 text-xs block mb-1.5">Phone *</label><input type="tel" required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="input-field" placeholder="+91 XXXXX XXXXX" /></div>
                   <div><label className="text-gray-400 text-xs block mb-1.5">Years of Experience</label><input type="text" value={form.experience} onChange={e => setForm({ ...form, experience: e.target.value })} className="input-field" placeholder="e.g. 4 years" /></div>
                   <div><label className="text-gray-400 text-xs block mb-1.5">Cover Note</label><textarea rows={3} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} className="textarea-field" placeholder="Why you'd be a great fit..." /></div>
-                  <button type="submit" className="btn-gold w-full justify-center"><FiSend size={14} /> Submit Application</button>
+                  <button type="submit" disabled={submitting} className="btn-gold w-full justify-center">
+                    <FiSend size={14} /> {submitting ? 'Submitting...' : 'Submit Application'}
+                  </button>
                 </form>
               )}
             </motion.div>

@@ -2,8 +2,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiPhone } from 'react-icons/fi';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function CTABanner() {
+  const { settings, phoneLink } = useSiteSettings();
   return (
     <section className="relative py-24 overflow-hidden">
       {/* Background */}
@@ -37,9 +39,9 @@ export default function CTABanner() {
               Get Free Consultation
               <FiArrowRight size={18} />
             </Link>
-            <a href="tel:+919876543210" className="btn-outline-white text-base px-8 py-4">
+            <a href={phoneLink} className="btn-outline-white text-base px-8 py-4">
               <FiPhone size={18} />
-              +91 98765 43210
+              {settings.phone}
             </a>
           </div>
         </motion.div>

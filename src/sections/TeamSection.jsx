@@ -2,9 +2,24 @@
 import { motion } from 'framer-motion';
 import { FaLinkedinIn, FaInstagram, FaTwitter } from 'react-icons/fa';
 import SectionTitle from '../components/SectionTitle';
-import { team } from '../data/team';
+import { useState, useEffect } from 'react';
+import { getDocuments } from '../firebase/firestore';
 
 export default function TeamSection() {
+  const [team, setTeam] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDocuments('team', { sortBy: 'order', sortOrder: 'asc' })
+      .then(data => {
+        setTeam(data);
+      })
+      .catch(() => setTeam([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+
+  if (loading) return <section className="section-py bg-dark-100 text-white text-center">Loading team...</section>;
   return (
     <section className="section-py bg-dark-100">
       <div className="container-custom">
@@ -15,7 +30,7 @@ export default function TeamSection() {
           center
         />
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
           {team.map((member, i) => (
             <motion.div
               key={member.id}
@@ -39,15 +54,15 @@ export default function TeamSection() {
                 {/* Social overlay */}
                 <div className="absolute inset-0 rounded-full bg-gold/80 flex items-center justify-center gap-2
                 opacity-0 group-hover:opacity-100 transition-all duration-400">
-                  <a href={member.linkedin} className="text-dark hover:scale-110 transition-transform">
+                  { (member.socialLinks?.linkedin || member.linkedin) && <a href={member.socialLinks?.linkedin || member.linkedin} className="text-dark hover:scale-110 transition-transform">
                     <FaLinkedinIn size={14} />
-                  </a>
-                  <a href={member.instagram} className="text-dark hover:scale-110 transition-transform">
+                  </a> }
+                  { (member.socialLinks?.instagram || member.instagram) && <a href={member.socialLinks?.instagram || member.instagram} className="text-dark hover:scale-110 transition-transform">
                     <FaInstagram size={14} />
-                  </a>
-                  <a href={member.twitter} className="text-dark hover:scale-110 transition-transform">
+                  </a> }
+                  { (member.socialLinks?.twitter || member.twitter) && <a href={member.socialLinks?.twitter || member.twitter} className="text-dark hover:scale-110 transition-transform">
                     <FaTwitter size={14} />
-                  </a>
+                  </a> }
                 </div>
               </div>
 

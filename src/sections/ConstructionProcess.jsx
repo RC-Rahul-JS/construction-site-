@@ -40,7 +40,7 @@ export default function ConstructionProcess() {
           {/* Connecting line (desktop) */}
           <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 lg:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 lg:gap-4">
             {steps.map((step, i) => {
               const Icon = step.icon;
               return (
